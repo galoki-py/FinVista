@@ -8,6 +8,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   setAuth: (user: User, token: string) => void;
+  setUser: (user: User) => void;
   logout: () => void;
   register: (data: RegistrationData) => Promise<void>;
   checkAuth: () => Promise<void>;
@@ -26,6 +27,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     set({ user, token, isAuthenticated: true });
   },
 
+  setUser: (user) => set({ user }),
+  
   logout: () => {
     localStorage.removeItem('token');
     set({ user: null, token: null, isAuthenticated: false });

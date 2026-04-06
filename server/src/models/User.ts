@@ -17,6 +17,9 @@ export interface IUser extends Document {
     investmentTargets?: number;
     financialKnowledgeRating?: number;
   };
+  points: number;
+  completedModules: string[];
+  rank: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -37,7 +40,10 @@ const UserSchema: Schema = new Schema({
     savingPolicies: { type: String },
     investmentTargets: { type: Number },
     financialKnowledgeRating: { type: Number, min: 1, max: 5 }
-  }
+  },
+  points: { type: Number, default: 0 },
+  completedModules: [{ type: String }],
+  rank: { type: String, default: 'Novice' }
 }, { timestamps: true });
 
 export default mongoose.model<IUser>('User', UserSchema);

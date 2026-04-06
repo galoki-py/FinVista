@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { generateFiscalInsight } from '../services/aiService';
-import { financialContent } from '../data/financialContent';
+import LearningModule from '../models/LearningModule';
+import User from '../models/User';
 
 export const getAIInsights = async (req: Request, res: Response) => {
   const userId = (req as any).user.userId;
@@ -28,5 +29,51 @@ export const getAIInsights = async (req: Request, res: Response) => {
 };
 
 export const getLearningModules = async (req: Request, res: Response) => {
-  res.json(financialContent);
+  try {
+    const modules = await LearningModule.find().sort({ category: 1, tier: 1 });
+    res.json(modules);
+  } catch (error) {
+    console.error('Fetch modules error:', error);
+    res.status(500).json({ error: 'Failed to fetch learning modules' });
+  }
 };
+
+export const submitQuiz = async (req: Request, res: Response) => {
+    const userId = (req as any).user.userId;
+    const { moduleId, score } = req.body; // score is usually 1 (correct) or 0 (incorrect) or total for module
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).json({ error: 'User not found' });
+
+        const module = await LearningModule.findById(moduleId);
+        if (!module) return res.status(404).json({ error: 'Module not found' });
+
+        // If not already completed, award points
+        if (!user.completedModules.includes(moduleId)) {
+            user.completedModules.push(moduleId);
+            user.points += module.points;
+            
+            // Recalculate Rank
+            if (user.points < 500) user.rank = 'Novice';
+            else if (user.points < 1500) user.rank = 'Apprentice';
+            else if (user.points < 3000) user.rank = 'Strategist';
+            else user.rank = 'Legend';
+
+            await user.save();
+        }
+
+        res.json({ 
+            message: 'Quiz submitted successfully', 
+            user: { 
+                points: user.points, 
+                rank: user.rank,
+                completedModules: user.completedModules
+            } 
+        });
+    } catch (error) {
+        console.error('Submit quiz error:', error);
+        res.status(500).json({ error: 'Failed to submit quiz' });
+    }
+};
+

@@ -20,6 +20,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/policies', policyRoutes);
+app.use('/api/ai', aiRoutes);
 
 app.get('/', (req: Request, res: Response) => {
   res.send('FinVista Server is running');

@@ -19,6 +19,9 @@ export interface User {
     financialKnowledgeRating?: 1 | 2 | 3 | 4 | 5;
   };
   
+  points: number;
+  completedModules: string[];
+  rank: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -71,7 +74,13 @@ export interface VaultStatus {
   netBalance: number;
 }
 
-export type LearningCategory = 'fd' | 'sip' | 'market' | 'security' | 'chitfund' | 'realestate' | 'gold';
+export type LearningCategory = 'fd' | 'sip' | 'market' | 'security' | 'chitfund' | 'realestate' | 'gold' | 'crypto' | 'trading' | 'mutualfunds' | 'etfs';
+
+export interface QuizQuestion {
+  question: string;
+  options: string[];
+  correctIndex: number;
+}
 
 export interface LearningModule {
   id: string;
@@ -79,6 +88,8 @@ export interface LearningModule {
   title: string;
   content: string;
   tier: number;
+  points: number;
+  quiz: QuizQuestion[];
 }
 
 export interface Insight {

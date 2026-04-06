@@ -7,6 +7,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "start": "node dist/index.js",
     "build": "tsc",
+    "seed:learning": "ts-node src/data/seedLearningData.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
