@@ -1,0 +1,65 @@
+:root {
+  --soft-white: #F8F9FA;
+  --mint: #E9F7EF;
+  --sky-blue: #EBF5FB;
+  --mint-dark: #D4EFDF;
+  --sky-blue-dark: #D4E6F1;
+  --text-primary: #2C3E50;
+  --text-secondary: #7F8C8D;
+  --border-color: #D5DBDB;
+  --primary: #2ECC71;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--soft-white);
+  color: var(--text-primary);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Base styles for buttons and containers */
+.card {
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: none; /* No shadow as per "Solid Light Tone" */
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+button.primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+button.primary:hover {
+  background-color: #27AE60;
+}
+
+input, select {
+  width: 100%;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: white;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--primary);
+}

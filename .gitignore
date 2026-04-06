@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+dist/
+build/
+.expo/
+
+# Env Files
+.env
+.env.local
+.env.*
+!.env.example
+
+# Workspace specific envs
+server/.env
+apps/web/.env
+apps/mobile/.env
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS Files
+.DS_Store
+Thumbs.db

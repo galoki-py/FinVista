@@ -1,0 +1,47 @@
+import express, { Request, Response } from 'express';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import authRoutes from './routes/authRoutes';
+import transactionRoutes from './routes/transactionRoutes';
+import policyRoutes from './routes/policyRoutes';
+import aiRoutes from './routes/aiRoutes';
+
+dotenv.config();
+
+const app = express();
+const PORT: string | number = process.env.PORT || 5000;
+
+app.use(cors());
+app.use(express.json());
+
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/policies', policyRoutes);
+
+app.get('/', (req: Request, res: Response) => {
+  res.send('FinVista Server is running');
+});
+
+// Fiscal Flow Engine placeholder
+app.get('/api/fiscal-flow', (req: Request, res: Response) => {
+  res.json({ message: 'Fiscal Flow Engine status: Operational' });
+});
+
+const startServer = async () => {
+  try {
+    const mongoUri = process.env.MONGO_URI || 'mongodb://localhost:27017/finvista';
+    await mongoose.connect(mongoUri);
+    console.log('Connected to MongoDB');
+    
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Initial startup error:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
