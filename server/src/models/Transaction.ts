@@ -6,6 +6,9 @@ export interface ITransaction extends Document {
   category: string;
   description?: string;
   type: 'income' | 'expense';
+  reflection?: string;
+  emotion?: 'Satisfied' | 'Neutral' | 'Regret';
+  isEssential: boolean;
   timestamp: Date;
 }
 
@@ -14,7 +17,10 @@ const TransactionSchema: Schema = new Schema({
   amount: { type: Number, required: true },
   category: { type: String, required: true },
   description: { type: String },
-  type: { type: String, enum: ['income', 'expense'], required: true },
+  type: { type: String, enum: ['income', 'expense'], default: 'expense' },
+  reflection: { type: String },
+  emotion: { type: String, enum: ['Satisfied', 'Neutral', 'Regret'] },
+  isEssential: { type: Boolean, default: false },
   timestamp: { type: Date, default: Date.now }
 }, { timestamps: true });
 

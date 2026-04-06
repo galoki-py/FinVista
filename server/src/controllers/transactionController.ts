@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 
 export const createTransaction = async (req: Request, res: Response) => {
   const userId = (req as any).user.userId;
-  const { amount, category, description, type } = req.body;
+  const { amount, category, description, type, reflection, emotion, isEssential } = req.body;
 
   try {
     const transaction = await Transaction.create({
@@ -13,7 +13,10 @@ export const createTransaction = async (req: Request, res: Response) => {
       amount,
       category,
       description,
-      type
+      type: type || 'expense',
+      reflection,
+      emotion,
+      isEssential
     });
     res.status(201).json(transaction);
   } catch (error) {
@@ -77,5 +80,38 @@ export const getSankeyData = async (req: Request, res: Response) => {
   } catch (error) {
     console.error('Sankey data error:', error);
     res.status(500).json({ error: 'Failed to fetch Sankey data' });
+  }
+};
+
+export const getDailySummary = async (req: Request, res: Response) => {
+  const userId = (req as any).user.userId;
+
+  const startOfDay = new Date();
+  startOfDay.setHours(0, 0, 0, 0);
+
+  const endOfDay = new Date();
+  endOfDay.setHours(23, 59, 59, 999);
+
+  try {
+    const transactions = await Transaction.find({
+      userId,
+      timestamp: {
+        $gte: startOfDay,
+        $lte: endOfDay
+      }
+    }).sort({ timestamp: -1 });
+
+    const totalSpent = transactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    res.json({
+      transactions,
+      totalSpent,
+      date: startOfDay
+    });
+  } catch (error) {
+    console.error('Daily summary error:', error);
+    res.status(500).json({ error: 'Failed to fetch daily summary' });
   }
 };

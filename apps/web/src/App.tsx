@@ -8,12 +8,16 @@ import Registration from './pages/Registration';
 import SankeyDashboard from './dashboard/SankeyDashboard';
 import VaultDashboard from './dashboard/VaultDashboard';
 import LearningHub from './pages/LearningHub';
+import IntentLoggingForm from './components/IntentLoggingForm';
+import DailySpendingSummary from './components/DailySpendingSummary';
+import { useState } from 'react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 function App() {
   const { user, isAuthenticated, setAuth, checkAuth, isLoading } = useAuthStore();
   const navigate = useNavigate();
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
     checkAuth();
@@ -67,9 +71,9 @@ function App() {
           <Route path="/registration" element={<Registration />} />
           <Route path="/" element={
             user?.registrationStatus.isRegistered ? (
-              <div className="card">
-                <h2>Welcome to your Dashboard, {user.name}</h2>
-                <p>Strategic money flow visualization coming soon.</p>
+              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '2rem' }}>
+                <IntentLoggingForm onSuccess={() => setRefreshTrigger(p => p + 1)} />
+                <DailySpendingSummary refreshTrigger={refreshTrigger} />
               </div>
             ) : (
               <div style={{ textAlign: 'center' }}>Please complete your registration.</div>

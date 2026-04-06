@@ -4,8 +4,12 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@finvista/*": ["../../packages/*/src"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@finvista/*": [
+        "../../packages/*/src"
+      ]
     },
     "jsx": "react-jsx"
   }

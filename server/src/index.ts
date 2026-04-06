@@ -1,13 +1,14 @@
+import dotenv from 'dotenv';
+import path from 'path';
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
 import express, { Request, Response } from 'express';
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes';
 import transactionRoutes from './routes/transactionRoutes';
 import policyRoutes from './routes/policyRoutes';
 import aiRoutes from './routes/aiRoutes';
-
-dotenv.config();
 
 const app = express();
 const PORT: string | number = process.env.PORT || 5000;

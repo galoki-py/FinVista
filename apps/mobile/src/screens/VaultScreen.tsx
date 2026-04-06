@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Modal, TextInput, Alert, RefreshControl } from 'react-native';
 import { useAuthStore } from '../store/useAuthStore';
 import axios from 'axios';
-import { Plus, Target, TrendingUp, Wallet, Sparkles, AlertCircle } from 'lucide-react-native';
+import { Plus, Target, TrendingUp, Wallet, Sparkles, AlertCircle, ShoppingBag, CheckCircle, XCircle, Heart, Meh, Frown } from 'lucide-react-native';
 import { Policy, VaultStatus, Insight } from '@finvista/types';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -21,17 +21,20 @@ const VaultScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [auditing, setAuditing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [dailySummary, setDailySummary] = useState<{ transactions: any[], totalSpent: number } | null>(null);
   
   const [newPolicy, setNewPolicy] = useState({ name: '', targetAmount: '', category: 'Saving' });
 
   const fetchData = useCallback(async () => {
     try {
-      const [vaultRes, policyRes] = await Promise.all([
+      const [vaultRes, policyRes, dailyRes] = await Promise.all([
         axios.get(`${API_URL}/policies/vault`, { headers: { Authorization: `Bearer ${token}` } }),
-        axios.get(`${API_URL}/policies`, { headers: { Authorization: `Bearer ${token}` } })
+        axios.get(`${API_URL}/policies`, { headers: { Authorization: `Bearer ${token}` } }),
+        axios.get(`${API_URL}/transactions/daily`, { headers: { Authorization: `Bearer ${token}` } })
       ]);
       setVault(vaultRes.data);
       setPolicies(policyRes.data);
+      setDailySummary(dailyRes.data);
     } catch (err) {
       console.error('Failed to fetch vault data', err);
     }
@@ -105,6 +108,46 @@ const VaultScreen = () => {
                 <Text style={styles.statValue}>₹{vault?.totalExpense.toLocaleString() || '0'}</Text>
             </View>
         </View>
+      </View>
+
+      <View style={styles.dailyCard}>
+        <View style={styles.dailyHeader}>
+            <View>
+                <Text style={styles.dailyLabel}>Today's Intentional Spending</Text>
+                <Text style={styles.dailyAmount}>₹{dailySummary?.totalSpent.toLocaleString() || '0'}</Text>
+            </View>
+            <ShoppingBag color="#2C3E50" size={32} opacity={0.1} />
+        </View>
+
+        {dailySummary?.transactions && dailySummary.transactions.length > 0 ? (
+            <View style={styles.recentList}>
+                {dailySummary.transactions.slice(0, 3).map((t, idx) => {
+                    const emotionIcons: any = { Satisfied: Heart, Neutral: Meh, Regret: Frown };
+                    const EmotionIcon = t.emotion ? emotionIcons[t.emotion] : Meh;
+                    const emotionColor = t.emotion === 'Satisfied' ? '#2ECC71' : t.emotion === 'Regret' ? '#E74C3C' : '#3498DB';
+
+                    return (
+                        <View key={t._id} style={styles.recentItem}>
+                            <View style={styles.recentInfo}>
+                                <Text style={styles.recentCat}>{t.category}</Text>
+                                <Text style={styles.recentDesc} numberOfLines={1}>{t.description || 'No description'}</Text>
+                            </View>
+                            <View style={styles.recentStats}>
+                                <Text style={styles.recentAmount}>₹{t.amount}</Text>
+                                <View style={{ flexDirection: 'row', gap: 4, alignItems: 'center' }}>
+                                    {t.emotion && <EmotionIcon size={12} color={emotionColor} />}
+                                    <Text style={[styles.recentTag, { color: t.isEssential ? '#3498DB' : '#7F8C8D' }]}>
+                                        {t.isEssential ? 'Need' : 'Want'}
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+                    )
+                })}
+            </View>
+        ) : (
+            <Text style={styles.emptyDaily}>No spending logged today yet.</Text>
+        )}
       </View>
 
       <View style={styles.auditorCard}>
@@ -452,6 +495,75 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#2ECC71',
     fontWeight: '700',
+  },
+  dailyCard: {
+    backgroundColor: '#FFFFFF',
+    margin: 20,
+    marginTop: 0,
+    borderRadius: 16,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: '#D5DBDB',
+  },
+  dailyHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 15,
+  },
+  dailyLabel: {
+      fontSize: 12,
+      fontWeight: '700',
+      color: '#7F8C8D',
+      marginBottom: 4,
+  },
+  dailyAmount: {
+      fontSize: 28,
+      fontWeight: '800',
+      color: '#2C3E50',
+  },
+  recentList: {
+      gap: 10,
+  },
+  recentItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 10,
+      borderTopWidth: 1,
+      borderTopColor: '#F2F4F4',
+  },
+  recentInfo: {
+      flex: 1,
+  },
+  recentCat: {
+      fontSize: 14,
+      fontWeight: '700',
+      color: '#2C3E50',
+  },
+  recentDesc: {
+      fontSize: 11,
+      color: '#7F8C8D',
+  },
+  recentStats: {
+      alignItems: 'flex-end',
+  },
+  recentAmount: {
+      fontSize: 14,
+      fontWeight: '700',
+      color: '#2ECC71',
+      marginBottom: 2,
+  },
+  recentTag: {
+      fontSize: 10,
+      fontWeight: '700',
+  },
+  emptyDaily: {
+      fontSize: 13,
+      color: '#7F8C8D',
+      fontStyle: 'italic',
+      textAlign: 'center',
+      paddingVertical: 10,
   }
 });
 
