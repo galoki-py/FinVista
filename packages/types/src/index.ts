@@ -21,6 +21,7 @@ export interface User {
   
   points: number;
   completedModules: string[];
+  quizAttempts: Array<{ moduleId: string; lastAttemptAt: Date }>;
   rank: string;
   createdAt: Date;
   updatedAt: Date;
