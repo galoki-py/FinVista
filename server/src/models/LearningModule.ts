@@ -20,6 +20,10 @@ const LearningModuleSchema: Schema = new Schema({
   tier: { type: Number, required: true, min: 1, max: 4 },
   points: { type: Number, required: true },
   quiz: [QuizQuestionSchema]
-}, { timestamps: true });
+}, { 
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
 
 export default mongoose.model<ILearningModuleDocument>('LearningModule', LearningModuleSchema);

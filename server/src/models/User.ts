@@ -19,6 +19,7 @@ export interface IUser extends Document {
   };
   points: number;
   completedModules: string[];
+  quizAttempts: Array<{ moduleId: string; lastAttemptAt: Date }>;
   rank: string;
   createdAt: Date;
   updatedAt: Date;
@@ -43,7 +44,15 @@ const UserSchema: Schema = new Schema({
   },
   points: { type: Number, default: 0 },
   completedModules: [{ type: String }],
+  quizAttempts: [{
+    moduleId: { type: String, required: true },
+    lastAttemptAt: { type: Date, required: true }
+  }],
   rank: { type: String, default: 'Novice' }
-}, { timestamps: true });
+}, { 
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
 
 export default mongoose.model<IUser>('User', UserSchema);

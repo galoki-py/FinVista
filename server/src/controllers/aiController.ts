@@ -40,7 +40,7 @@ export const getLearningModules = async (req: Request, res: Response) => {
 
 export const submitQuiz = async (req: Request, res: Response) => {
     const userId = (req as any).user.userId;
-    const { moduleId, score } = req.body; // score is usually 1 (correct) or 0 (incorrect) or total for module
+    const { moduleId, score } = req.body; 
 
     try {
         const user = await User.findById(userId);
@@ -49,26 +49,48 @@ export const submitQuiz = async (req: Request, res: Response) => {
         const module = await LearningModule.findById(moduleId);
         if (!module) return res.status(404).json({ error: 'Module not found' });
 
-        // If not already completed, award points
-        if (!user.completedModules.includes(moduleId)) {
-            user.completedModules.push(moduleId);
-            user.points += module.points;
+        // Check 24 hour limit
+        const attemptIndex = user.quizAttempts.findIndex(a => a.moduleId === moduleId);
+        if (attemptIndex !== -1) {
+            const now = new Date();
+            const lastAttempt = new Date(user.quizAttempts[attemptIndex].lastAttemptAt);
+            const diff = now.getTime() - lastAttempt.getTime();
             
-            // Recalculate Rank
-            if (user.points < 500) user.rank = 'Novice';
-            else if (user.points < 1500) user.rank = 'Apprentice';
-            else if (user.points < 3000) user.rank = 'Strategist';
-            else user.rank = 'Legend';
-
-            await user.save();
+            if (diff < 24 * 60 * 60 * 1000) {
+                const hoursLeft = Math.ceil((24 * 60 * 60 * 1000 - diff) / (60 * 60 * 1000));
+                return res.status(403).json({ 
+                    error: `Cooldown: Use this time to study. Try again in ${hoursLeft} hours.` 
+                });
+            }
+            user.quizAttempts[attemptIndex].lastAttemptAt = new Date();
+        } else {
+            user.quizAttempts.push({ moduleId, lastAttemptAt: new Date() });
         }
+
+        // Award points based on score (10 per correct answer as requested)
+        const pointsToAward = (score || 0) * 10;
+        user.points += pointsToAward;
+
+        // Mark as completed if they score well (e.g., at least 1 correct)
+        if (score > 0 && !user.completedModules.includes(moduleId)) {
+            user.completedModules.push(moduleId);
+        }
+
+        // Recalculate Rank
+        if (user.points < 500) user.rank = 'Novice';
+        else if (user.points < 1500) user.rank = 'Apprentice';
+        else if (user.points < 3000) user.rank = 'Strategist';
+        else user.rank = 'Legend';
+
+        await user.save();
 
         res.json({ 
             message: 'Quiz submitted successfully', 
             user: { 
                 points: user.points, 
                 rank: user.rank,
-                completedModules: user.completedModules
+                completedModules: user.completedModules,
+                quizAttempts: user.quizAttempts
             } 
         });
     } catch (error) {
