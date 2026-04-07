@@ -1,6 +1,6 @@
 # FinVista: Financial Literacy Platform
 
-FinVista is a hyper-local, offline-first financial literacy platform designed for undergraduates. This monorepo contains the mobile application, web interface, and the backend server.
+FinVista is a hyper-local, offline-first financial literacy platform designed for working professionals and part-time students. This monorepo contains the mobile application, web interface, and the backend server.
 
 ## 🚀 Quick Start
 

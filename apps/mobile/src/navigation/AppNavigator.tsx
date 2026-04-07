@@ -6,8 +6,17 @@ import RegistrationScreen from '../screens/RegistrationScreen';
 import LoggingScreen from '../screens/LoggingScreen';
 import VaultScreen from '../screens/VaultScreen';
 import LearningScreen from '../screens/LearningScreen';
+import SpendsScreen from '../screens/SpendsScreen';
+import ToolsScreen from '../screens/ToolsScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
-import { Compass, PieChart, ShieldCheck, BookOpen, User } from 'lucide-react-native';
+import { Compass, PieChart, ShieldCheck, BookOpen, User as UserIcon, LogIn } from 'lucide-react-native';
+import * as Google from 'expo-auth-session/providers/google';
+import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import axios from 'axios';
+
+WebBrowser.maybeCompleteAuthSession();
 
 const Tab = createBottomTabNavigator();
 
@@ -19,28 +28,83 @@ const PlaceholderScreen = ({ name }: { name: string }) => (
 );
 
 const AuthScreen = () => {
-    // Basic OAuth Login UI (Actual logic with expo-auth-session to be refined in Phase 1 final)
     const { setAuth } = useAuthStore();
+    const [request, response, promptAsync] = Google.useAuthRequest({
+        webClientId: process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+        androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
+        iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
+        redirectUri: AuthSession.makeRedirectUri(),
+    });
+
+    const [isLoggingIn, setIsLoggingIn] = React.useState(false);
+
+    React.useEffect(() => {
+        if (response?.type === 'success') {
+            const { id_token } = response.params;
+            handleGoogleLogin(id_token);
+        }
+    }, [response]);
+
+    const handleGoogleLogin = async (idToken: string) => {
+        setIsLoggingIn(true);
+        try {
+            const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000/api';
+            const res = await axios.post(`${API_URL}/auth/google`, { idToken });
+            await setAuth(res.data.user, res.data.token);
+        } catch (error) {
+            console.error('Login failed:', error);
+            alert('Authentication failed. Please check your network connection.');
+        } finally {
+            setIsLoggingIn(false);
+        }
+    };
+
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F8F9FA', padding: 30 }}>
-            <Text style={{ fontSize: 32, fontWeight: '800', color: '#2ECC71', marginBottom: 10 }}>FinVista</Text>
-            <Text style={{ fontSize: 16, color: '#7F8C8D', textAlign: 'center', marginBottom: 40 }}>
-                Intelligent Financial Ecosystem for Undergraduates
-            </Text>
+            <View style={{ alignItems: 'center', marginBottom: 50 }}>
+                <View style={{ backgroundColor: '#E8F8F5', padding: 20, borderRadius: 25, marginBottom: 20 }}>
+                     <Compass color="#2ECC71" size={60} />
+                </View>
+                <Text style={{ fontSize: 36, fontWeight: '900', color: '#2C3E50', marginBottom: 8 }}>FinVista</Text>
+                <Text style={{ fontSize: 16, color: '#7F8C8D', textAlign: 'center', lineHeight: 24 }}>
+                    Intelligent Financial Ecosystem for Professionals
+                </Text>
+            </View>
+
             <TouchableOpacity 
-                style={{ backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#D5DBDB', padding: 15, borderRadius: 8, width: '100%', alignItems: 'center' }}
-                onPress={() => setAuth({ 
-                    id: 'mock_id', 
-                    googleId: 'mock_google_id', 
-                    email: 'user@example.com', 
-                    name: 'Mock User',
-                    registrationStatus: { isRegistered: false },
-                    createdAt: new Date(),
-                    updatedAt: new Date()
-                }, 'mock_token')}
+                disabled={!request || isLoggingIn}
+                style={{ 
+                    backgroundColor: '#FFFFFF', 
+                    flexDirection: 'row',
+                    borderWidth: 1, 
+                    borderColor: '#D5DBDB', 
+                    padding: 16, 
+                    borderRadius: 12, 
+                    width: '100%', 
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.05,
+                    shadowRadius: 10,
+                    elevation: 2,
+                    opacity: (!request || isLoggingIn) ? 0.6 : 1
+                }}
+                onPress={() => promptAsync()}
             >
-                <Text style={{ fontWeight: '600', color: '#2C3E50' }}>Sign in with Google (Mock)</Text>
+                {isLoggingIn ? (
+                    <ActivityIndicator color="#2ECC71" style={{ marginRight: 12 }} />
+                ) : (
+                    <LogIn color="#2C3E50" size={20} style={{ marginRight: 12 }} />
+                )}
+                <Text style={{ fontWeight: '700', color: '#2C3E50', fontSize: 16 }}>
+                    {isLoggingIn ? 'Authenticating...' : 'Sign in with Google'}
+                </Text>
             </TouchableOpacity>
+
+            <Text style={{ marginTop: 24, fontSize: 13, color: '#BDC3C7', textAlign: 'center' }}>
+                Secure authentication handled by Google
+            </Text>
         </View>
     )
 }
@@ -70,11 +134,11 @@ const AppNavigator = () => {
         screenOptions={({ route }) => ({
           tabBarIcon: ({ color, size }) => {
             const iconSize = 24;
-            if (route.name === 'Logging') return <Compass color={color} size={iconSize} />;
             if (route.name === 'Spends') return <PieChart color={color} size={iconSize} />;
             if (route.name === 'Vault') return <ShieldCheck color={color} size={iconSize} />;
+            if (route.name === 'Tools') return <Compass color={color} size={iconSize} />;
             if (route.name === 'Learning') return <BookOpen color={color} size={iconSize} />;
-            if (route.name === 'Profile') return <User color={color} size={iconSize} />;
+            if (route.name === 'Profile') return <UserIcon color={color} size={iconSize} />;
           },
           tabBarActiveTintColor: '#2ECC71',
           tabBarInactiveTintColor: '#7F8C8D',
@@ -97,11 +161,11 @@ const AppNavigator = () => {
           }
         })}
       >
-        <Tab.Screen name="Logging" component={LoggingScreen} />
-        <Tab.Screen name="Spends" component={() => <PlaceholderScreen name="Weekly Spends" />} />
+        <Tab.Screen name="Spends" component={SpendsScreen} />
         <Tab.Screen name="Vault" component={VaultScreen} />
+        <Tab.Screen name="Tools" component={ToolsScreen} />
         <Tab.Screen name="Learning" component={LearningScreen} />
-        <Tab.Screen name="Profile" component={() => <PlaceholderScreen name="Profile" />} />
+        <Tab.Screen name="Profile" component={ProfileScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );

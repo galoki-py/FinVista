@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, RefreshControl, ActivityIndicator } from 'react-native';
 import { useAuthStore } from '../store/useAuthStore';
 import axios from 'axios';
-import { BookOpen, ChevronRight, Landmark, PiggyBank, TrendingUp, ShieldCheck, Briefcase, Gem } from 'lucide-react-native';
+import { BookOpen, ChevronRight, Landmark, PiggyBank, TrendingUp, ShieldCheck, Briefcase, Gem, Bitcoin, BarChart, Layers, Activity } from 'lucide-react-native';
 import { LearningModule, LearningCategory } from '@finvista/types';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000/api';
@@ -14,7 +14,11 @@ const categoryIcons: Record<LearningCategory, any> = {
   security: ShieldCheck,
   chitfund: Briefcase,
   realestate: BookOpen,
-  gold: Gem
+  gold: Gem,
+  crypto: Bitcoin,
+  trading: BarChart,
+  mutualfunds: Layers,
+  etfs: Activity
 };
 
 const LearningScreen = () => {
@@ -81,7 +85,7 @@ const LearningScreen = () => {
     >
       <View style={styles.header}>
         <Text style={styles.title}>Learning Hub</Text>
-        <Text style={styles.subtitle}>Curated for Undergraduates</Text>
+        <Text style={styles.subtitle}>Curated for Professionals & Students</Text>
       </View>
 
       <View style={styles.list}>

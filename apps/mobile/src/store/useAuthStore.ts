@@ -14,7 +14,7 @@ interface AuthState {
   checkAuth: () => Promise<void>;
 }
 
-const API_URL = 'http://192.168.1.6:5000/api'; // Reachable by emulators and devices on same Wi-Fi
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,

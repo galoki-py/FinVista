@@ -146,7 +146,10 @@ const Tools: React.FC = () => {
                 padding: '2rem',
                 borderRadius: '24px',
                 border: '1px solid var(--primary-light)',
-                height: '100%'
+                width: '450px',
+                minHeight: '550px',
+                display: 'flex',
+                flexDirection: 'column'
             }}>
                 <h3 style={{ margin: '0 0 1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <BarChart3 size={20} color="var(--primary)" /> Projection Results
@@ -156,8 +159,8 @@ const Tools: React.FC = () => {
                     {selectedTool === 'sip' || selectedTool === 'lumpsum' || selectedTool === 'stepup' ? (
                         <>
                             <div>
-                                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Maturity Value</div>
-                                <div style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--primary)' }}>₹{results.maturityValue?.toLocaleString()}</div>
+                                <div style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.5rem' }}>Maturity Value</div>
+                                <div style={{ fontSize: '3.5rem', fontWeight: 900, color: 'var(--primary)', letterSpacing: '-2px', lineHeight: 1 }}>₹{results.maturityValue?.toLocaleString()}</div>
                             </div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                 <div><div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Invested Amount</div><div style={{ fontWeight: 700 }}>₹{results.totalInvestment?.toLocaleString()}</div></div>
@@ -167,8 +170,8 @@ const Tools: React.FC = () => {
                     ) : selectedTool === 'emi' ? (
                         <>
                             <div>
-                                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Monthly EMI Payment</div>
-                                <div style={{ fontSize: '2.5rem', fontWeight: 900, color: '#E74C3C' }}>₹{results.emi?.toLocaleString()}</div>
+                                <div style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.5rem' }}>Monthly EMI Payment</div>
+                                <div style={{ fontSize: '3.5rem', fontWeight: 900, color: '#E74C3C', letterSpacing: '-2px', lineHeight: 1 }}>₹{results.emi?.toLocaleString()}</div>
                             </div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                 <div><div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Principal Amount</div><div style={{ fontWeight: 700 }}>₹{p.toLocaleString()}</div></div>
@@ -199,9 +202,9 @@ const Tools: React.FC = () => {
                     ) : selectedTool === 'fire' ? (
                         <>
                             <div>
-                                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Required FIRE Corpus</div>
-                                <div style={{ fontSize: '2.5rem', fontWeight: 900, color: '#F39C12' }}>₹{(results.targetCorpus / 10000000).toFixed(2)} Cr</div>
-                                <div style={{ fontSize: '0.85rem', color: '#F39C12', fontWeight: 600 }}>₹{results.targetCorpus?.toLocaleString()}</div>
+                                <div style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.5rem' }}>Required FIRE Corpus</div>
+                                <div style={{ fontSize: '3.5rem', fontWeight: 900, color: '#F39C12', letterSpacing: '-2px', lineHeight: 1 }}>₹{(results.targetCorpus / 10000000).toFixed(2)} Cr</div>
+                                <div style={{ fontSize: '1.25rem', color: '#F39C12', fontWeight: 800 }}>₹{results.targetCorpus?.toLocaleString()}</div>
                             </div>
                             <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                                 At a {r}% withdrawal rate, this corpus generates <b>₹{results.annualWithdrawal?.toLocaleString()}</b> per year, sustaining your lifestyle forever.
@@ -210,8 +213,8 @@ const Tools: React.FC = () => {
                     ) : selectedTool === 'inflation' ? (
                         <>
                             <div>
-                                <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Future Cost (₹)</div>
-                                <div style={{ fontSize: '2.5rem', fontWeight: 900, color: 'var(--primary)' }}>₹{results.futureValue?.toLocaleString()}</div>
+                                <div style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 600, marginBottom: '0.5rem' }}>Future Cost</div>
+                                <div style={{ fontSize: '3.5rem', fontWeight: 900, color: 'var(--primary)', letterSpacing: '-2px', lineHeight: 1 }}>₹{results.futureValue?.toLocaleString()}</div>
                             </div>
                             <div style={{ padding: '1.5rem', backgroundColor: '#FDF2F2', borderRadius: '16px' }}>
                                 <div style={{ fontSize: '0.85rem', color: '#E74C3C' }}>Purchasing Power Warning</div>
@@ -231,70 +234,100 @@ const Tools: React.FC = () => {
     }
 
     return (
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
-                <h1 style={{ fontSize: '2.5rem', fontWeight: 800, color: 'var(--primary)', marginBottom: '0.5rem' }}>Precision Financial Tools</h1>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Advanced calculators for every financial micro-decision.</p>
-            </header>
+        <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F8F9FA' }}>
+            {/* Fixed Sidebar */}
+            <aside style={{ 
+                width: '320px', 
+                position: 'fixed', 
+                left: 0, 
+                top: '70px', 
+                bottom: 0, 
+                backgroundColor: 'white',
+                borderRight: '1px solid #E5E7EB',
+                padding: '2rem 1.5rem',
+                overflowY: 'auto',
+                zIndex: 10
+            }}>
+                <div style={{ marginBottom: '2rem' }}>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--primary)', marginBottom: '0.5rem' }}>Tools Library</h2>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Explore specialized financial calculators.</p>
+                </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 3fr', gap: '2.5rem' }}>
-                {/* Sidebar */}
-                <aside style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {toolCategories.map(cat => (
-                        <div key={cat.name} style={{ marginBottom: '1rem' }}>
-                            <div style={{ 
-                                display: 'flex', 
-                                alignItems: 'center', 
-                                gap: '0.75rem', 
-                                padding: '0.5rem 1rem',
-                                color: cat.color,
-                                fontWeight: 800,
-                                fontSize: '0.85rem',
-                                textTransform: 'uppercase',
-                                letterSpacing: '1px'
-                            }}>
-                                {cat.icon} {cat.name}
-                            </div>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
-                                {cat.tools.map(tool => (
-                                    <button
-                                        key={tool.id}
-                                        onClick={() => {
-                                            setActiveCategory(cat.name as any);
-                                            setSelectedTool(tool.id);
-                                        }}
-                                        className={selectedTool === tool.id ? 'active' : ''}
-                                        style={{
-                                            textAlign: 'left',
-                                            padding: '1rem',
-                                            borderRadius: '16px',
-                                            backgroundColor: selectedTool === tool.id ? 'white' : 'transparent',
-                                            border: selectedTool === tool.id ? '2px solid var(--primary)' : '2px solid transparent',
-                                            boxShadow: selectedTool === tool.id ? '0 10px 20px rgba(0,0,0,0.05)' : 'none',
-                                            transition: 'all 0.3s ease'
-                                        }}
-                                    >
-                                        <div style={{ fontWeight: 700, fontSize: '0.95rem', color: selectedTool === tool.id ? 'var(--primary)' : 'var(--text-primary)' }}>{tool.name}</div>
-                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>{tool.description}</div>
-                                    </button>
-                                ))}
-                            </div>
+                {toolCategories.map(cat => (
+                    <div key={cat.name} style={{ marginBottom: '2rem' }}>
+                        <div style={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '0.75rem', 
+                            padding: '0 0.5rem',
+                            color: cat.color,
+                            fontWeight: 800,
+                            fontSize: '0.8rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1.2px',
+                            marginBottom: '1rem'
+                        }}>
+                            {cat.icon} {cat.name}
                         </div>
-                    ))}
-                </aside>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                            {cat.tools.map(tool => (
+                                <button
+                                    key={tool.id}
+                                    onClick={() => {
+                                        setActiveCategory(cat.name as any);
+                                        setSelectedTool(tool.id);
+                                    }}
+                                    className={selectedTool === tool.id ? 'active' : ''}
+                                    style={{
+                                        textAlign: 'left',
+                                        padding: '1.25rem',
+                                        borderRadius: '16px',
+                                        backgroundColor: selectedTool === tool.id ? 'var(--primary-light)' : 'transparent',
+                                        border: 'none',
+                                        transition: 'all 0.3s ease',
+                                        cursor: 'pointer',
+                                        width: '100%'
+                                    }}
+                                >
+                                    <div style={{ fontWeight: 700, fontSize: '1rem', color: selectedTool === tool.id ? 'var(--primary)' : 'var(--text-primary)' }}>{tool.name}</div>
+                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '0.3rem', lineHeight: '1.3' }}>{tool.description}</div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </aside>
 
-                {/* Main Content Area */}
-                <main style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.8fr', gap: '2rem' }}>
-                    <div className="card" style={{ padding: '2rem', height: 'fit-content' }}>
-                        <h2 style={{ margin: '0 0 2rem 0', fontSize: '1.4rem', fontWeight: 800 }}>Calculator Input</h2>
+            {/* Main Content Area */}
+            <main style={{ flex: 1, marginLeft: '320px', padding: '3rem 4rem' }}>
+                <header style={{ marginBottom: '4rem', textAlign: 'left' }}>
+                    <h1 style={{ fontSize: '3rem', fontWeight: 900, color: 'var(--primary)', marginBottom: '0.5rem', letterSpacing: '-1.5px' }}>
+                        {toolCategories.flatMap(c => c.tools).find(t => t.id === selectedTool)?.name || 'Financial Tools'}
+                    </h1>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Precise projections for professional financial planning.</p>
+                </header>
+
+                <div style={{ display: 'flex', gap: '3rem', alignItems: 'flex-start' }}>
+                    {/* Standardized Input Box */}
+                    <div className="card" style={{ 
+                        flex: 1, 
+                        maxWidth: '550px', 
+                        padding: '3rem', 
+                        borderRadius: '24px', 
+                        backgroundColor: 'white',
+                        boxShadow: '0 20px 50px rgba(0,0,0,0.04)',
+                        border: '1px solid #F1F5F9'
+                    }}>
+                        <h2 style={{ margin: '0 0 2.5rem 0', fontSize: '1.5rem', fontWeight: 800, borderLeft: '4px solid var(--primary)', paddingLeft: '1rem' }}>Parameters</h2>
                         {renderInputs()}
                     </div>
                     
-                    <div style={{ position: 'sticky', top: '100px', height: 'fit-content' }}>
+                    {/* Fixed Size Result Box */}
+                    <div style={{ position: 'sticky', top: '100px' }}>
                         {renderResults()}
                     </div>
-                </main>
-            </div>
+                </div>
+            </main>
 
             <style dangerouslySetInnerHTML={{ __html: `
                 button:hover:not(.active) {
