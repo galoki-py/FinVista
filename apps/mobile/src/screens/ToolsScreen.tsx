@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
     header: { padding: 20, paddingTop: 30 },
     title: { fontSize: 24, fontWeight: '800', color: '#2C3E50' },
     subtitle: { fontSize: 14, color: '#7F8C8D', marginTop: 4 },
-    scrollContent: { padding: 15, minWidth: '100%' },
+    scrollContent: { padding: 15 },
     section: { marginBottom: 25 },
     sectionHeader: { flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 12, marginLeft: 5 },
     sectionTitle: { fontSize: 12, fontWeight: '800', letterSpacing: 1 },
