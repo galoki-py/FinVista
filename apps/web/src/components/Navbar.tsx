@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuthStore } from '../store/useAuthStore';
-import { LogOut, Compass, PieChart, BookOpen, ShieldCheck, User } from 'lucide-react';
+import { LogOut, Compass, PieChart, BookOpen, Calculator, User } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
@@ -12,8 +12,8 @@ const Navbar: React.FC = () => {
   const navItems = [
     { name: 'Dashboard', path: '/', icon: <Compass size={20} /> },
     { name: 'Weekly Spends', path: '/spends', icon: <PieChart size={20} /> },
+    { name: 'Tools', path: '/tools', icon: <Calculator size={20} /> },
     { name: 'Learning Hub', path: '/learning', icon: <BookOpen size={20} /> },
-    { name: 'The Vault', path: '/vault', icon: <ShieldCheck size={20} /> },
     { name: 'Profile', path: '/profile', icon: <User size={20} /> },
   ];
 

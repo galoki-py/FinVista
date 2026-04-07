@@ -6,7 +6,8 @@ import { useAuthStore } from './store/useAuthStore';
 import Navbar from './components/Navbar';
 import Registration from './pages/Registration';
 import SankeyDashboard from './dashboard/SankeyDashboard';
-import VaultDashboard from './dashboard/VaultDashboard';
+import Tools from './pages/Tools';
+import Profile from './pages/Profile';
 import LearningHub from './pages/LearningHub';
 import IntentLoggingForm from './components/IntentLoggingForm';
 import DailySpendingSummary from './components/DailySpendingSummary';
@@ -80,7 +81,8 @@ function App() {
             )
           } />
           <Route path="/spends" element={<SankeyDashboard />} />
-          <Route path="/vault" element={<VaultDashboard />} />
+          <Route path="/tools" element={<Tools />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/learning" element={<LearningHub />} />
           <Route path="*" element={<div>Page coming soon.</div>} />
         </Routes>
