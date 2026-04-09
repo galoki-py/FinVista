@@ -18,10 +18,11 @@
     "turbo": "latest"
   },
   "dependencies": {
+    "@google/genai": "^1.49.0",
     "expo-haptics": "~15.0.8",
-    "react-native-safe-area-context": "~5.6.0",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "react-native-safe-area-context": "~5.6.0"
   },
   "overrides": {
     "react-native-safe-area-context": "~5.6.0",

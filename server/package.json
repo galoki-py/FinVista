@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@finvista/types": "*",
-    "@google/generative-ai": "^0.24.1",
+    "@google/genai": "^1.49.0",
     "cors": "^2.8.6",
     "dotenv": "^16.4.7",
     "express": "^5.2.1",
