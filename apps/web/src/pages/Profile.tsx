@@ -10,7 +10,8 @@ import {
   Trash2, 
   ShieldCheck,
   TrendingUp,
-  AlertCircle
+  AlertCircle,
+  CheckCircle2
 } from 'lucide-react';
 import type { Policy, VaultStatus } from '@finvista/types';
 
@@ -66,6 +67,17 @@ const Profile: React.FC = () => {
             fetchData();
         } catch (err) {
             console.error('Failed to delete policy', err);
+        }
+    };
+
+    const handleToggleFulfillment = async (id: string) => {
+        try {
+            await axios.patch(`${API_URL}/policies/${id}/toggle`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            fetchData();
+        } catch (err) {
+            console.error('Failed to toggle policy completion', err);
         }
     };
 
@@ -134,8 +146,10 @@ const Profile: React.FC = () => {
 
                     <div className="card" style={{ backgroundColor: 'var(--primary)', color: 'white', border: 'none' }}>
                         <h3 style={{ margin: '0 0 1rem 0', opacity: 0.9, fontSize: '1rem' }}>Net Investable Surplus</h3>
-                        <div style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem' }}>₹{vault?.netBalance.toLocaleString()}</div>
-                        <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.8 }}>Available across all accounts to fund your targets.</p>
+                        <div style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem' }}>₹{vault?.surplus?.toLocaleString() || 0}</div>
+                        <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.8 }}>
+                            Buffer Applied: {vault?.details?.bufferPercent}% (₹{vault?.details?.bufferAmount?.toLocaleString()})
+                        </p>
                     </div>
                 </section>
 
@@ -201,43 +215,73 @@ const Profile: React.FC = () => {
                                     <p style={{ color: 'var(--text-secondary)' }}>You haven't established any saving policies yet.</p>
                                 </div>
                             )}
-                            {policies.map(policy => {
-                                const progress = vault && vault.netBalance > 0 ? Math.min(1, vault.netBalance / policy.targetAmount) : 0;
-                                return (
-                                    <div key={policy.id} style={{ 
-                                        padding: '1.25rem', 
-                                        borderRadius: '16px', 
-                                        border: '1px solid var(--border-color)',
-                                        position: 'relative',
-                                        overflow: 'hidden'
-                                    }}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                                            <div style={{ display: 'flex', gap: '0.75rem' }}>
-                                                <div style={{ backgroundColor: 'var(--primary-light)', padding: '0.5rem', borderRadius: '8px', color: 'var(--primary)' }}>
-                                                    <TrendingUp size={16} />
+                            {(() => {
+                                let availableBalance = vault?.surplus || 0;
+                                return policies.map(policy => {
+                                    let progress = 0;
+                                    let amountAllocated = 0;
+                                    
+                                    if (policy.isCompleted) {
+                                        progress = 1;
+                                        amountAllocated = policy.targetAmount;
+                                    } else {
+                                        amountAllocated = Math.min(availableBalance, policy.targetAmount);
+                                        progress = policy.targetAmount > 0 ? amountAllocated / policy.targetAmount : 0;
+                                    }
+                                    
+                                    availableBalance = Math.max(0, availableBalance - amountAllocated);
+
+                                    return (
+                                        <div key={policy.id} style={{ 
+                                            padding: '1.25rem', 
+                                            borderRadius: '16px', 
+                                            border: '1px solid var(--border-color)',
+                                            position: 'relative',
+                                            overflow: 'hidden',
+                                            opacity: policy.isCompleted ? 0.7 : 1
+                                        }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                                                <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                                    <div style={{ backgroundColor: 'var(--primary-light)', padding: '0.5rem', borderRadius: '8px', color: 'var(--primary)' }}>
+                                                        <TrendingUp size={16} />
+                                                    </div>
+                                                    <div>
+                                                        <div style={{ fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                            {policy.name}
+                                                            {policy.isCompleted && <span style={{ fontSize: '0.7rem', backgroundColor: '#2ecc71', color: 'white', padding: '0.1rem 0.4rem', borderRadius: '12px' }}>Fulfilled</span>}
+                                                        </div>
+                                                        <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Goal: ₹{(policy.targetAmount - (vault?.surplus || 0)).toLocaleString()}</div>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <div style={{ fontWeight: 800 }}>{policy.name}</div>
-                                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Goal: ₹{policy.targetAmount.toLocaleString()}</div>
+                                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                    <button 
+                                                        onClick={() => handleToggleFulfillment(policy.id)}
+                                                        style={{ padding: '0.3rem', backgroundColor: 'transparent', color: policy.isCompleted ? '#2ecc71' : '#aaa' }}
+                                                        title={policy.isCompleted ? "Mark as unfulfilled" : "Mark as fulfilled"}
+                                                    >
+                                                        <CheckCircle2 size={16} />
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleDeletePolicy(policy.id)}
+                                                        style={{ padding: '0.3rem', backgroundColor: 'transparent', color: '#E74C3C' }}
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
                                                 </div>
                                             </div>
-                                            <button 
-                                                onClick={() => handleDeletePolicy(policy.id)}
-                                                style={{ padding: '0.3rem', backgroundColor: 'transparent', color: '#E74C3C' }}
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
+                                            <div style={{ height: '6px', backgroundColor: 'var(--soft-white)', borderRadius: '3px', overflow: 'hidden', marginBottom: '0.5rem' }}>
+                                                <div style={{ height: '100%', backgroundColor: policy.isCompleted ? '#2ecc71' : 'var(--primary)', width: `${progress * 100}%`, transition: 'width 0.3s ease' }} />
+                                            </div>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem' }}>
+                                                <span style={{ fontWeight: 700, color: policy.isCompleted ? '#2ecc71' : 'var(--primary)' }}>{Math.round(progress * 100)}% coverage</span>
+                                                <span style={{ color: 'var(--text-secondary)' }}>
+                                                    {policy.isCompleted ? 'Target achieved' : `₹${(policy.targetAmount - amountAllocated).toLocaleString()} more needed`}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <div style={{ height: '6px', backgroundColor: 'var(--soft-white)', borderRadius: '3px', overflow: 'hidden', marginBottom: '0.5rem' }}>
-                                            <div style={{ height: '100%', backgroundColor: 'var(--primary)', width: `${progress * 100}%` }} />
-                                        </div>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem' }}>
-                                            <span style={{ fontWeight: 700, color: 'var(--primary)' }}>{Math.round(progress * 100)}% coverage</span>
-                                            <span style={{ color: 'var(--text-secondary)' }}>₹{(policy.targetAmount - (vault?.netBalance || 0)).toLocaleString()} more needed</span>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                                    );
+                                });
+                            })()}
                         </div>
                         
                         <p style={{ marginTop: '2rem', fontSize: '0.8rem', color: 'var(--text-secondary)', fontStyle: 'italic', borderTop: '1px solid #eee', paddingTop: '1rem' }}>

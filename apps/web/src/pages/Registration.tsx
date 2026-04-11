@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import type { RegistrationData } from '@finvista/types';
 
 const Registration: React.FC = () => {
-  const { register } = useAuthStore();
+  const { completeProfile } = useAuthStore();
   const navigate = useNavigate();
   const [formData, setFormData] = useState<RegistrationData>({
     city: '',
@@ -19,7 +19,7 @@ const Registration: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await register(formData);
+      await completeProfile(formData);
       navigate('/');
     } catch (err) {
       alert('Registration failed. Please try again.');

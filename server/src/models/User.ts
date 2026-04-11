@@ -1,8 +1,9 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IUser extends Document {
-  googleId: string;
+  googleId?: string;
   email: string;
+  password?: string;
   name: string;
   picture?: string;
   registrationStatus: {
@@ -26,8 +27,15 @@ export interface IUser extends Document {
 }
 
 const UserSchema: Schema = new Schema({
-  googleId: { type: String, required: true, unique: true },
+  googleId: { 
+    type: String, 
+    index: { 
+      unique: true, 
+      partialFilterExpression: { googleId: { $type: "string" } } 
+    } 
+  },
   email: { type: String, required: true, unique: true },
+  password: { type: String },
   name: { type: String, required: true },
   picture: { type: String },
   registrationStatus: {
@@ -54,5 +62,11 @@ const UserSchema: Schema = new Schema({
   toJSON: { virtuals: true },
   toObject: { virtuals: true }
 });
+
+// Compare password method
+UserSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
+  if (!this.password) return false;
+  return require('bcryptjs').compare(candidatePassword, this.password);
+};
 
 export default mongoose.model<IUser>('User', UserSchema);

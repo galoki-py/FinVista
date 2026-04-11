@@ -16,7 +16,11 @@ const PolicySchema: Schema = new Schema({
   currentAmount: { type: Number, default: 0 },
   category: { type: String, required: true },
   isCompleted: { type: Boolean, default: false }
-}, { timestamps: true });
+}, { 
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
 
 PolicySchema.index({ userId: 1 });
 

@@ -73,6 +73,14 @@ export interface VaultStatus {
   totalIncome: number;
   totalExpense: number;
   netBalance: number;
+  surplus?: number;
+  details?: {
+    earnings: number;
+    avgSpending: number;
+    bufferAmount: number;
+    currentMonthActualSpending: number;
+    bufferPercent: number;
+  };
 }
 
 export type LearningCategory = 'fd' | 'sip' | 'market' | 'security' | 'chitfund' | 'realestate' | 'gold' | 'crypto' | 'trading' | 'mutualfunds' | 'etfs';

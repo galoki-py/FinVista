@@ -1,7 +1,5 @@
 import { useEffect } from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
-import { GoogleLogin } from '@react-oauth/google';
-import axios from 'axios';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { useAuthStore } from './store/useAuthStore';
 import Navbar from './components/Navbar';
 import Registration from './pages/Registration';
@@ -13,10 +11,11 @@ import IntentLoggingForm from './components/IntentLoggingForm';
 import DailySpendingSummary from './components/DailySpendingSummary';
 import { useState } from 'react';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
-  const { user, isAuthenticated, setAuth, checkAuth, isLoading } = useAuthStore();
+  const { user, isAuthenticated, checkAuth, isLoading } = useAuthStore();
   const navigate = useNavigate();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
@@ -30,60 +29,39 @@ function App() {
     }
   }, [isAuthenticated, user, navigate]);
 
-  const handleLoginSuccess = async (response: any) => {
-    try {
-      const res = await axios.post(`${API_URL}/auth/google`, {
-        idToken: response.credential
-      });
-      setAuth(res.data.user, res.data.token);
-    } catch (err) {
-      console.error('Login failed', err);
-    }
-  };
-
   if (isLoading) return (
     <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--soft-white)' }}>
       <div style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Loading FinVista...</div>
     </div>
   );
 
-  if (!isAuthenticated) return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', backgroundColor: 'var(--soft-white)' }}>
-      <div className="card" style={{ width: '100%', maxWidth: '400px', textAlign: 'center', backgroundColor: 'white' }}>
-        <h1 style={{ color: 'var(--primary)', marginBottom: '1rem', fontWeight: 800 }}>FinVista</h1>
-        <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Master your money with agentic intelligence.</p>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <GoogleLogin 
-            onSuccess={handleLoginSuccess}
-            onError={() => { console.error('Login Failed'); }}
-            theme="outline"
-            shape="rectangular"
-          />
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <div>
-      <Navbar />
-      <main style={{ padding: '2rem' }}>
+      {isAuthenticated && <Navbar />}
+      <main style={{ padding: isAuthenticated ? '2rem' : '0' }}>
         <Routes>
-          <Route path="/registration" element={<Registration />} />
+          <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/" />} />
+          <Route path="/register" element={!isAuthenticated ? <RegisterPage /> : <Navigate to="/" />} />
+          
+          <Route path="/registration" element={isAuthenticated ? <Registration /> : <Navigate to="/login" />} />
           <Route path="/" element={
-            user?.registrationStatus.isRegistered ? (
-              <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '2rem' }}>
-                <IntentLoggingForm onSuccess={() => setRefreshTrigger(p => p + 1)} />
-                <DailySpendingSummary refreshTrigger={refreshTrigger} />
-              </div>
+            isAuthenticated ? (
+              user?.registrationStatus.isRegistered ? (
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 0.8fr', gap: '2rem' }}>
+                  <IntentLoggingForm onSuccess={() => setRefreshTrigger(p => p + 1)} />
+                  <DailySpendingSummary refreshTrigger={refreshTrigger} />
+                </div>
+              ) : (
+                <div style={{ textAlign: 'center' }}>Please complete your registration.</div>
+              )
             ) : (
-              <div style={{ textAlign: 'center' }}>Please complete your registration.</div>
+              <LoginPage />
             )
           } />
-          <Route path="/spends" element={<SankeyDashboard />} />
-          <Route path="/tools" element={<Tools />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/learning" element={<LearningHub />} />
+          <Route path="/spends" element={isAuthenticated ? <SankeyDashboard /> : <Navigate to="/login" />} />
+          <Route path="/tools" element={isAuthenticated ? <Tools /> : <Navigate to="/login" />} />
+          <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/login" />} />
+          <Route path="/learning" element={isAuthenticated ? <LearningHub /> : <Navigate to="/login" />} />
           <Route path="*" element={<div>Page coming soon.</div>} />
         </Routes>
       </main>

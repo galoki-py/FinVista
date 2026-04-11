@@ -14,7 +14,6 @@ const Navbar: React.FC = () => {
     { name: 'Weekly Spends', path: '/spends', icon: <PieChart size={20} /> },
     { name: 'Tools', path: '/tools', icon: <Calculator size={20} /> },
     { name: 'Learning Hub', path: '/learning', icon: <BookOpen size={20} /> },
-    { name: 'Profile', path: '/profile', icon: <User size={20} /> },
   ];
 
   return (
@@ -52,8 +51,30 @@ const Navbar: React.FC = () => {
         ))}
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>{user.name}</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+        <Link 
+          to="/profile" 
+          style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            gap: '0.5rem', 
+            textDecoration: 'none',
+            color: 'var(--text-secondary)',
+            padding: '0.3rem 0.6rem',
+            borderRadius: '6px',
+            backgroundColor: location.pathname === '/profile' ? 'var(--soft-white)' : 'transparent',
+            transition: 'all 0.2s'
+          }}
+        >
+          <User size={18} color={location.pathname === '/profile' ? 'var(--primary)' : 'var(--text-secondary)'} />
+          <span style={{ 
+            fontSize: '0.9rem', 
+            fontWeight: 700,
+            color: location.pathname === '/profile' ? 'var(--text-primary)' : 'var(--text-secondary)'
+          }}>
+            {user.name}
+          </span>
+        </Link>
         <button onClick={logout} style={{ 
           backgroundColor: 'transparent', 
           color: 'var(--text-secondary)',
