@@ -4,6 +4,8 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "strict": true,
+    "noUnusedLocals": false,        // <--- Add this
+    "noUnusedParameters": false,    // <--- Add this
     "skipLibCheck": true,
     "esModuleInterop": true,
     "isolatedModules": true,
